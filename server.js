@@ -2,12 +2,13 @@ const express = require('express');
 const session = require('cookie-session');
 const bodyParser = require('body-parser');
 const app = express();
+const secKey = "I tried hard!";
 
 app.set('view engine','ejs');
 
 app.use(session({
-    authenticated: false,
-    UserID: null
+    Name: "First Cookie try",
+    keys: [secKey]
 }))
 
 app.get('/', (req,res) => {
