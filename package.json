@@ -1,0 +1,16 @@
+{
+    "name": "server",
+    "description": "381 Project",
+    "author": "Bernie Poon",
+    "version": "0.0.1",
+    "dependencies": {
+        "express": "*",
+        "ejs": "*",
+        "body-parser": "*",
+        "cookie-session": "*"
+    },
+    "engine": "node >= 12.0.0",
+    "scripts": {
+        "start": "node server"
+    }
+}
