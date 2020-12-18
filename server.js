@@ -36,7 +36,8 @@ app.get('/', (req,res) => {
 	if (!req.session.isAuthenticated) {    // user not logged in!
 		res.redirect('/login');
 	} else {
-		res.status(200).render('Success',{UserName:req.session.UserName, PW: req.session.PW});
+        res.status(200).render('Success',{UserName:req.session.UserName, PW: req.session.PW});
+        req.session = null;
 	}
 });
 
@@ -51,7 +52,8 @@ app.post('/login', (req,res) =>{
 	console.log(req.body);
 
 	req.session.UserName = req.body.txtUserName;
-	req.session.PW = req.body.txtPW;
+    req.session.PW = req.body.txtPW;
+    
 	res.redirect('/');
 
 
