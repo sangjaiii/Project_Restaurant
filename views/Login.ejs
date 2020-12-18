@@ -18,29 +18,31 @@
     <div class="container d-flex h-100">
       <div class="row align-self-center w-100">
           <div class="col-6 mx-auto">
-              <div class="jumbotron">
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label for="UserName">User Name: </label>
-                      <input type="text"
-                        class="form-control" name="txtUserName">
+              <form action="/login" method="POST">
+                <div class="jumbotron">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="UserName">User Name: </label>
+                        <input type="text"
+                          class="form-control" name="txtUserName">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="PW">Password</label>
+                        <input type="password" class="form-control" name="txtPW">
+                      </div>
                     </div>
                   </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label for="PW">Password</label>
-                      <input type="password" class="form-control" name="txtPW">
-                    </div>
+                  <div class="row text-center">
+                    <div class="col-md-6 mx-auto">
+                      <button type="button" onclick="$('.input').html('')" class="btn btn-secondary">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Confirm</button>
+                    </div>                  
                   </div>
                 </div>
-                <div class="row text-center">
-                  <div class="col-md-6 mx-auto">
-                    <button type="button" onclick="$('.input').html('')" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Confirm</button>
-                  </div>                  
-                </div>
-              </div>
+              </form>
           </div>
       </div>
   </div>
