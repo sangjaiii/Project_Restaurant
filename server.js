@@ -2,10 +2,25 @@ const express = require('express');
 const session = require('cookie-session');
 const bodyParser = require('body-parser');
 const app = express();
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+const ObjectId = require('mongodb').ObjectID;
+const url = 'mongodb+srv://ProjectAccess:yTUyYnl4jrE8RObp@cluster0.0czjw.mongodb.net/381_Project_Restaurant?retryWrites=true&w=majority';  // MongoDB Atlas Connection URL
+const dbName = '381_Project_Restaurant'; // Database Name
 const secKey = "I tried hard!";
 
 
 app.set('view engine','ejs');
+app.use(express.static("Pages"));
+
+const client = new MongoClient(url, { useNewUrlParser: true } );
+client.connect((err) => {
+	assert.equal(null,err);
+	console.log(`Connected successfully to ${url}`);
+
+	const db = client.db(dbName);
+
+})
 
 // support parsing of application/json type post data
 app.use(bodyParser.json());
