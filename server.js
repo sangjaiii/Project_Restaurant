@@ -13,15 +13,23 @@ app.use(session({
 
 app.get('/', (req,res) => {
 	console.log(req.session);
-	if (!req.session.authenticated) {    // user not logged in!
+	if (!req.session.isAuthenticated) {    // user not logged in!
 		res.redirect('/login');
 	} else {
-		res.status(200).render('secrets',{name:req.session.username});
+		res.status(200).render('Success',{name:req.session.UserName, PW: req.session.PW});
 	}
 });
 
-app.get('/login', (req,res) =>{
-    res.status(200).render('Login',{});
+app.get('/login', (req, res))
+=>
+app.post('/login', (req,res) =>{
+
+	req.session.isAuthenticated = true;
+	req.session.UserName = req.body.txtUserName;
+	req.session.PW = req.body.txtPW;
+	res.redirect('/');
+
+
 });
 
 app.listen(process.env.PORT || 8099);
