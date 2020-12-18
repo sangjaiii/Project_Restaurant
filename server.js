@@ -1,4 +1,5 @@
 const express = require('express');
+const hashPW = require('password-hash');
 const session = require('cookie-session');
 const bodyParser = require('body-parser');
 const app = express();
@@ -17,10 +18,9 @@ const client = new MongoClient(url, { useNewUrlParser: true } );
 client.connect((err) => {
 	assert.equal(null,err);
 	console.log(`Connected successfully to ${url}`);
-
 	const db = client.db(dbName);
-
 })
+
 
 // support parsing of application/json type post data
 app.use(bodyParser.json());
@@ -35,9 +35,9 @@ app.get('/', (req,res) => {
 	console.log(req.session);
 	if (!req.session.isAuthenticated) {    // user not logged in!
 		res.redirect('/login');
-	} else {
-        res.status(200).render('Success',{UserName:req.session.UserName, PW: req.session.PW});
-        req.session = null;
+	} else {	
+		res.status(200).render('Success',{UserName:req.session.UserName, PW: req.session.PW});
+		
 	}
 });
 
@@ -48,15 +48,20 @@ app.get('/login', (req,res) =>{
 app.post('/login', (req,res) =>{
 
 	req.session.isAuthenticated = true;
-
 	console.log(req.body);
-
 	req.session.UserName = req.body.txtUserName;
-    req.session.PW = req.body.txtPW;
-    
+	req.session.PW = req.body.txtPW;
 	res.redirect('/');
 
-
 });
+
+app.post('/Register', (req, res) =>{
+	console.log(req.body);	
+})
+
+app.get('/Logout', (req, res) =>{
+	req.session = null;
+	res.redirect('/');
+})
 
 app.listen(process.env.PORT || 8099);

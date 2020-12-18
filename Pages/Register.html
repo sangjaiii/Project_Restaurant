@@ -8,16 +8,29 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        body,html {
+        height: 100%;
+      }
+    </style>
   </head>
   <body>
-      <div class="container">
-            <form action="/Register" method="POST">
-                <div class="form-group">
-                  <input type="text" class="form-control" name="Testing_Register" id="" aria-describedby="helpId" placeholder="YOYOYO">
+        <div class="container d-flex h-100">
+            <div class="row align-self-center w-100">
+                <div class="col-6 mx-auto">
+                    <div class="card shadow p-3 mb-5 bg-white rounded">
+                    <div class="card-body">
+                        <form action="/Register" method="POST">
+                            <div class="form-group">
+                            <input type="text" class="form-control" name="Testing_Register" id="" aria-describedby="helpId" placeholder="YOYOYO">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-      </div>
+            </div>
+        </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
