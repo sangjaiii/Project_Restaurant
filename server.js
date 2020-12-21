@@ -15,11 +15,19 @@ app.set('view engine','ejs');
 app.use(express.static("Pages"));
 
 //Function For CRUD
-const loginFuction = (db, callback) => {
-	let cursor = db.collection('Login_Info').find({});
+const loginFuction = (db, userName, Password, callback) => {
+	let cursor = db.collection('Login_Info').find({}, {"userName":1, "password":1, "userid": 1, "_id": 0});
+	let loginInfo = [];
 	cursor.forEach((doc) => {
-	   console.log(JSON.stringify(doc));
+	   loginInfo.push(JSON.stringify(doc));
 	});
+
+	loginInfo.forEach(element => {
+		if(element.userName == userName && element.password == Password)
+			return element.userid;
+	});
+
+	return false;
 	callback();
  };
 //End 
@@ -66,9 +74,10 @@ app.post('/login', (req,res) =>{
 		console.log("Successful connection");
 
 		const DB = connection.db(dbName);
-		loginFuction(DB, () =>{
+		console.log(loginFuction(DB, req.body.txtUserName, req.body.txtPW, () =>{
 			connection.close();
-		});
+		}));
+		
 
 	})
 
