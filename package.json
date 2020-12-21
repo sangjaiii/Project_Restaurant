@@ -9,7 +9,8 @@
         "body-parser": "*",
         "cookie-session": "*",
         "mongodb": "3.1",
-        "password-hash": "*"
+        "password-hash": "*",
+        "formidable": "latest"
     },
     "engine": "node >= 12.0.0",
     "scripts": {

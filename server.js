@@ -112,8 +112,23 @@ app.post('/login', (req,res) =>{
 app.get('/newDoc', (req, res) =>{
 	res.status(200).render("CreateNewDoc", {UserName:req.session.UserName, TotalNumber: req.session.TotalNumber});
 });
-app.POST('/newDoc', (req, res) =>{
+app.post('/newDoc', (req, res) =>{
 	
+	const form = new formidable.IncomingForm();
+	let photo, photo_mimetype = "";
+	form.parse(req, (err, fields, files) =>{
+		console.log(JSON.stringify(files.picPhoto));
+		/*
+		if(files){
+			fs.readFile(files.filetoupload.path, (err, data) =>{
+				photo = new Buffer.from(data).toString('base64');
+				console.log(photo);
+			})
+		}
+		*/
+
+	})
+
 })
 
 
