@@ -56,6 +56,15 @@ const loginFuction = (db, callback) => {
 	 })
  }
 
+ const getAllDocument = (db, callback) =>{
+	 let cursor = db.collection('Restaurant').find({});
+
+	 cursor.toArray((err, docs) =>{
+		 assert.equal(null, err);
+		 callback(docs);
+	 })
+ }
+
 //End 
 
 
@@ -151,10 +160,16 @@ app.post('/newDoc', (req, res) =>{
 	res.status(200).render('CreateNewDoc', {UserName:req.session.UserName, TotalNumber: req.session.TotalNumber, isAlert: "true", isInsert: "true"});
 });
 
-
+//Handling Logout request
 app.get('/Logout', (req, res) =>{
 	req.session = null;
 	res.redirect('/');
 })
+
+//Handling random route, route back to home/info page
+app.get('*', (req, res) =>{
+	res.redirect('/');
+})
+
 
 app.listen(process.env.PORT || 8099);
