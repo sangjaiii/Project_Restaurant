@@ -6,6 +6,8 @@ const app = express();
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const ObjectId = require('mongodb').ObjectID;
+const fs = require('fs');
+const formidable = require('formidable');
 const url = 'mongodb+srv://ProjectAccess:yTUyYnl4jrE8RObp@cluster0.0czjw.mongodb.net/381_Project_Restaurant?retryWrites=true&w=majority';  // MongoDB Atlas Connection URL
 const dbName = '381_Project_Restaurant'; // Database Name
 const secKey = "I tried hard!";
@@ -29,6 +31,20 @@ const loginFuction = (db, callback) => {
  const countTotalNumber = (db) =>{
 	 let Tnumber = db.collection('Restaurant').find({}).count();
 	 return Tnumber;
+ }
+
+ const insertNewDoc = (db, name, cuisine, street, building, zipcode, lon, lat, photo, userid, callback) =>{
+	 db.collection("Restaurant").insertOne({
+		"name": name,
+		"name": name,
+		"name": name,
+		"name": name,
+		"name": name,
+		"name": name,
+		"name": name,
+		"name": name,
+
+	 })
  }
 
 //End 
@@ -56,6 +72,7 @@ app.get('/', (req,res) => {
 	}
 });
 
+//Handling Login Page and Login procrdure
 app.get('/login', (req,res) =>{
     res.status(200).render('Login',{});
 });
@@ -89,9 +106,16 @@ app.post('/login', (req,res) =>{
 			res.redirect('/');
 		});
 	})
-	
-
 });
+
+// Handling new document page and Adding new document
+app.get('/newDoc', (req, res) =>{
+	res.status(200).render("CreateNewDoc", {UserName:req.session.UserName, TotalNumber: req.session.TotalNumber});
+});
+app.POST('/newDoc', (req, res) =>{
+	
+})
+
 
 app.get('/Logout', (req, res) =>{
 	req.session = null;

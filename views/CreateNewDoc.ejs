@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Creating New Restaurant</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.css">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-dark">
+        <div class="container-fluid">
+          <b><a class="navbar-brand text-white">Restaurants</a></b>
+          <span class="navbar-text">
+            Creating New Restaurant
+          </span>
+          <div class="d-flex">
+                <div class="text-white me-2">
+                  <div class="mx-auto">
+                    Hi! <%= UserName %>! <a href="logout">Logout</a>
+                  </div>
+                </div>
+          </div>
+        </div>      
+    </nav>
+
+    <br>
+    <br>
+    <br>
+
+    <div class="container shadow p-3 mb-5 bg-white rounded">
+        
+        <h2>New Restaurant Info</h2>
+        <hr />
+
+        <form action="/newDoc" method="POST">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="txtName">Name: </label>
+                      <input type="text" class="form-control" name="txtName" placeholder="" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="txtCuisine">Cuisine: </label>
+                      <input type="text" class="form-control" name="txtCuisine"  placeholder="">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="txtStreet">Street: </label>
+                      <input type="text" class="form-control" name="txtStreet"  placeholder="">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="txtBuilding">Building: </label>
+                      <input type="text" class="form-control" name="txtBuilding"  placeholder="">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="txtZipcode">Zipcode: </label>
+                      <input type="text" class="form-control" name="txtZipcode"  placeholder="">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="txtGPS_lon">GPS Coordinates (lon.): </label>
+                      <input type="text" class="form-control" name="txtGPS_lon"  placeholder="">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="txtGPS_lat">GPS Coordinates (lat.): </label>
+                      <input type="text" class="form-control" name="txtGPS_lat"  placeholder="">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="picPhoto">Photo: </label>
+                      <input type="file" class="form-control" name="picPhoto"  placeholder="">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-secondary" onclick="$('.form-control').val('')">Cancel</button>
+                </div>
+            </div>
+        </form>
+
+
+    </div>
+  </body>
+</html>
