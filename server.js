@@ -15,10 +15,11 @@ app.set('view engine','ejs');
 app.use(express.static("Pages"));
 
 //Function For CRUD
-const loginFuction = (db, userName, Password, callback) => {
+const loginFuction = (db, userName, Password) => {
 	let cursor = db.collection('Login_Info').find({}, {"userName":1, "password":1, "userid": 1, "_id": 0});
 	let loginInfo = [];
 	cursor.forEach((doc) => {
+		console.log(doc);
 	   loginInfo.push(JSON.stringify(doc));
 	});
 
@@ -27,22 +28,15 @@ const loginFuction = (db, userName, Password, callback) => {
 		if(element.userName == userName && element.password == Password){
 			console.log("Matched");
 			return element.userid;
-
 		}
 	});
 
 	return false;
-	callback();
  };
 //End 
 
 
-const client = new MongoClient(url, { useNewUrlParser: true } );
-client.connect((err) => {
-	assert.equal(null,err);
-	console.log(`Connected successfully to ${url}`);
-	const db = client.db(dbName);
-});
+
 
 // support parsing of application/json type post data
 app.use(bodyParser.json());
@@ -71,22 +65,20 @@ app.get('/login', (req,res) =>{
 app.post('/login', (req,res) =>{
 
 	//Connect to DB to retrieve Login Info
-	const connection = new MongoClient(url);
+	const connection = new MongoClient(url { useNewUrlParser: true } );
 	connection.connect((err) =>{
 
 		assert.equal(null,err);
 		console.log("Successful connection");
 
 		const DB = connection.db(dbName);
-		console.log(loginFuction(DB, req.body.txtUserName, req.body.txtPW, () =>{
-			connection.close();
-		}));
+		console.log(loginFuction(DB, req.body.txtUserName, req.body.txtPW));
+		connection.close();
 		
 
 	})
 
 	req.session.isAuthenticated = true;
-	console.log(req.body);
 	req.session.UserName = req.body.txtUserName;
 	req.session.PW = req.body.txtPW;
 	res.redirect('/');
