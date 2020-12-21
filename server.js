@@ -23,8 +23,12 @@ const loginFuction = (db, userName, Password, callback) => {
 	});
 
 	loginInfo.forEach(element => {
-		if(element.userName == userName && element.password == Password)
+		console.log()
+		if(element.userName == userName && element.password == Password){
+			console.log("Matched");
 			return element.userid;
+
+		}
 	});
 
 	return false;
