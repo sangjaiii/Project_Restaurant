@@ -13,36 +13,21 @@ const secKey = "I tried hard!";
 
 app.set('view engine','ejs');
 app.use(express.static("Pages"));
+app.use(express.static("Pic"));
+
 
 //Function For CRUD
-const loginFuction = (db, userName, Password, callback) => {
+const loginFuction = (db, callback) => {
 	let cursor = db.collection('Login_Info').find({}, {"userName":1, "password":1, "userid": 1, "_id": 0});
-	let loginInfo = [];
-	cursor.forEach((doc) => {
-	   loginInfo.push(JSON.stringify(doc));
+	
+	cursor.toArray((err, docs) =>{
+		assert.equal(null, err);
+		callback(docs);
 	});
-
-	loginInfo.forEach(element => {
-		console.log()
-		if(element.userName == userName && element.password == Password){
-			console.log("Matched");
-			return element.userid;
-
-		}
-	});
-
-	return false;
-	callback();
  };
 //End 
 
 
-const client = new MongoClient(url, { useNewUrlParser: true } );
-client.connect((err) => {
-	assert.equal(null,err);
-	console.log(`Connected successfully to ${url}`);
-	const db = client.db(dbName);
-});
 
 // support parsing of application/json type post data
 app.use(bodyParser.json());
@@ -55,7 +40,7 @@ app.use(session({
 }));
 
 app.get('/', (req,res) => {
-	console.log(req.session);
+	console.log(req.session.isAuthenticated + " " + req.session.UserName + " " + req.session.PW + " " + req.session.userid);
 	if (!req.session.isAuthenticated) {    // user not logged in!
 		res.redirect('/login');
 	} else {	
@@ -71,25 +56,29 @@ app.get('/login', (req,res) =>{
 app.post('/login', (req,res) =>{
 
 	//Connect to DB to retrieve Login Info
-	const connection = new MongoClient(url);
+	const connection = new MongoClient(url, { useNewUrlParser: true });
 	connection.connect((err) =>{
 
 		assert.equal(null,err);
 		console.log("Successful connection");
 
 		const DB = connection.db(dbName);
-		console.log(loginFuction(DB, req.body.txtUserName, req.body.txtPW, () =>{
+		loginFuction(DB, (LoginInfo) =>{
 			connection.close();
-		}));
-		
-
+			LoginInfo.forEach(element => {
+				if(element.userName == req.body.txtUserName && element.password == req.body.txtPW){
+					console.log("Matched");
+					req.session.isAuthenticated = true;
+					req.session.UserName = req.body.txtUserName;
+					req.session.PW = req.body.txtPW;
+					req.session.userid = element.userid;
+					console.log(req.session.isAuthenticated + " " + req.session.UserName + " " + req.session.PW + " " + req.session.userid);
+				}
+			});
+			res.redirect('/');
+		});
 	})
-
-	req.session.isAuthenticated = true;
-	console.log(req.body);
-	req.session.UserName = req.body.txtUserName;
-	req.session.PW = req.body.txtPW;
-	res.redirect('/');
+	
 
 });
 
