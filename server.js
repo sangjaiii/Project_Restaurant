@@ -19,17 +19,17 @@ client.connect((err) => {
 	assert.equal(null,err);
 	console.log(`Connected successfully to ${url}`);
 	const db = client.db(dbName);
-})
-
+});
 
 // support parsing of application/json type post data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//initializing the cookies
 app.use(session({
     Name: "First Cookie try",
     keys: [secKey]
-}))
+}));
 
 app.get('/', (req,res) => {
 	console.log(req.session);
@@ -54,11 +54,7 @@ app.post('/login', (req,res) =>{
 	res.redirect('/');
 
 });
-
-app.post('/Register', (req, res) =>{
-	console.log(req.body);	
-})
-
+\
 app.get('/Logout', (req, res) =>{
 	req.session = null;
 	res.redirect('/');
