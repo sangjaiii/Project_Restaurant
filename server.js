@@ -14,6 +14,17 @@ const secKey = "I tried hard!";
 app.set('view engine','ejs');
 app.use(express.static("Pages"));
 
+//Function For CRUD
+const loginFuction = (db, callback) => {
+	let cursor = db.collection('Login_Info').find({});
+	cursor.forEach((doc) => {
+	   console.log(JSON.stringify(doc));
+	});
+	callback();
+ };
+//End 
+
+
 const client = new MongoClient(url, { useNewUrlParser: true } );
 client.connect((err) => {
 	assert.equal(null,err);
@@ -47,6 +58,20 @@ app.get('/login', (req,res) =>{
 
 app.post('/login', (req,res) =>{
 
+	//Connect to DB to retrieve Login Info
+	const connection = new MongoClient(url);
+	connection.connect((err) =>{
+
+		assert.equal(null,err);
+		console.log("Successful connection");
+
+		const DB = connection.db(dbName);
+		loginFuction(DB, () =>{
+			connection.close();
+		});
+
+	})
+
 	req.session.isAuthenticated = true;
 	console.log(req.body);
 	req.session.UserName = req.body.txtUserName;
@@ -54,7 +79,7 @@ app.post('/login', (req,res) =>{
 	res.redirect('/');
 
 });
-\
+
 app.get('/Logout', (req, res) =>{
 	req.session = null;
 	res.redirect('/');
