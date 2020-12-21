@@ -20,7 +20,7 @@
   <body>
     <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-dark">
         <div class="container-fluid">
-          <b><a class="navbar-brand text-white">Restaurants</a></b>
+          <b><a class="navbar-brand text-white" href="/">Restaurants</a></b>
           <span class="navbar-text">
             Creating New Restaurant
           </span>
@@ -37,9 +37,14 @@
     <br>
     <br>
     <br>
+    <div class="container">
+        <div id="alert">
+        </div>
+    </div>
+   
 
-    <div class="container shadow p-3 mb-5 bg-white rounded">
-        
+    <div class="container shadow p-3 mb-5 bg-white rounded">        
+
         <h2>New Restaurant Info</h2>
         <hr />
 
@@ -49,6 +54,14 @@
                     <div class="form-group">
                       <label for="txtName">Name: </label>
                       <input type="text" class="form-control" name="txtName" placeholder="" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="txtBorough">Borough: </label>
+                      <input type="text" class="form-control" name="txtBorough"  placeholder="">
                     </div>
                 </div>
             </div>
@@ -117,8 +130,28 @@
                 </div>
             </div>
         </form>
-
-
     </div>
+    <input type="text" id="isAlert" value="<%= isAlert %>"" hidden>
+    <input type="text" id="isInsert" value="<%= isInsert %>"" hidden>
+
+    <script>
+        $(document).ready(function(){
+
+            var isAlert = $("#isAlert").val();
+            var isInsert = $("#isInsert").val();
+
+            if(isAlert == "true"){
+                var textInserted = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <strong>Insert success!</strong> The new restaurant has been insert to database.
+                                    </div>`;
+                var textFailed = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <strong>Insert Fail!</strong> The document could not insert to database.
+                                  </div>`;
+                
+                isInsert == "true"? $("#alert").append(textInserted):$("#alert").append(textInstextFailederted);
+            }
+        })
+
+    </script>
   </body>
 </html>

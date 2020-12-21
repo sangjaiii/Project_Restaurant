@@ -8,6 +8,7 @@ const assert = require('assert');
 const ObjectId = require('mongodb').ObjectID;
 const fs = require('fs');
 const formidable = require('formidable');
+const { ObjectID } = require('mongodb');
 const url = 'mongodb+srv://ProjectAccess:yTUyYnl4jrE8RObp@cluster0.0czjw.mongodb.net/381_Project_Restaurant?retryWrites=true&w=majority';  // MongoDB Atlas Connection URL
 const dbName = '381_Project_Restaurant'; // Database Name
 const secKey = "I tried hard!";
@@ -33,17 +34,25 @@ const loginFuction = (db, callback) => {
 	 return Tnumber;
  }
 
- const insertNewDoc = (db, name, cuisine, street, building, zipcode, lon, lat, photo, userid, callback) =>{
-	 db.collection("Restaurant").insertOne({
+ const insertNewDoc = (db, name, borough, cuisine, street, building, zipcode, lon, lat, photo, photo_mimetype, userid, callback) =>{
+	
+	 db.collection('Restaurant').insertOne({
 		"name": name,
-		"name": name,
-		"name": name,
-		"name": name,
-		"name": name,
-		"name": name,
-		"name": name,
-		"name": name,
-
+		"borough": borough,
+		"cuisine": cuisine,
+		"photo": photo,
+		"photo_mimetype": photo_mimetype,
+		"address": {
+			"street": street,
+			"building": building,
+			"zipcode": zipcode,
+			"coord": [lon, lat]
+		},
+		"grades": [],
+		"owner": ObjectID(userid)
+	 }, (err, result) =>{
+		 assert.equal(null, err);
+		 callback(result);
 	 })
  }
 
@@ -61,7 +70,7 @@ app.use(session({
     keys: [secKey]
 }));
 
-
+//Handling the Info Page
 app.get('/', (req,res) => {
 	//console.log(req.session.isAuthenticated + " " + req.session.UserName + " " + req.session.PW + " " + req.session.userid);
 	if (!req.session.isAuthenticated) {    // user not logged in!
@@ -76,7 +85,6 @@ app.get('/', (req,res) => {
 app.get('/login', (req,res) =>{
     res.status(200).render('Login',{});
 });
-
 app.post('/login', (req,res) =>{
 
 	//Connect to DB to retrieve Login Info
@@ -110,26 +118,38 @@ app.post('/login', (req,res) =>{
 
 // Handling new document page and Adding new document
 app.get('/newDoc', (req, res) =>{
-	res.status(200).render("CreateNewDoc", {UserName:req.session.UserName, TotalNumber: req.session.TotalNumber});
+	res.status(200).render("CreateNewDoc", {UserName:req.session.UserName, TotalNumber: req.session.TotalNumber, isAlert: "false", isInsert: "false"});
 });
 app.post('/newDoc', (req, res) =>{
 	
 	const form = new formidable.IncomingForm();
 	let photo, photo_mimetype = "";
 	form.parse(req, (err, fields, files) =>{
-		console.log(JSON.stringify(files.picPhoto));
-		/*
-		if(files){
-			fs.readFile(files.filetoupload.path, (err, data) =>{
+		
+		console.log(fields);
+
+		if(files.picPhoto.size > 0){
+			fs.readFile(files.picPhoto.path, (err, data) =>{
 				photo = new Buffer.from(data).toString('base64');
-				console.log(photo);
+				photo_mimetype = files.picPhoto.type;
 			})
 		}
-		*/
 
-	})
+		const connection = new MongoClient(url, { useNewUrlParser: true });
+		connection.connect((err) =>{
+			
+			assert.equal(err, null);
+			console.log("Successful connection");
 
-})
+			const db = connection.db(dbName)				
+			insertNewDoc(db, fields.txtName, fields.txtBorough, fields.txtCuisine, fields.txtStreet, fields.txtBuilding, fields.txtZipcode, fields.txtGPS_lon, fields.txtGPS_lat, photo, photo_mimetype, req.session.userid, (result) =>{
+				connection.close();
+				console.log(result);
+			});	
+		});
+	});
+	res.status(200).render('CreateNewDoc', {UserName:req.session.UserName, TotalNumber: req.session.TotalNumber, isAlert: "true", isInsert: "true"});
+});
 
 
 app.get('/Logout', (req, res) =>{
