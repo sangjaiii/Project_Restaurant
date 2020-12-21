@@ -25,6 +25,12 @@ const loginFuction = (db, callback) => {
 		callback(docs);
 	});
  };
+
+ const countTotalNumber = (db) =>{
+	 let Tnumber = db.collection('Restaurant').find({}).count();
+	 return Tnumber;
+ }
+
 //End 
 
 
@@ -39,12 +45,13 @@ app.use(session({
     keys: [secKey]
 }));
 
+
 app.get('/', (req,res) => {
-	console.log(req.session.isAuthenticated + " " + req.session.UserName + " " + req.session.PW + " " + req.session.userid);
+	//console.log(req.session.isAuthenticated + " " + req.session.UserName + " " + req.session.PW + " " + req.session.userid);
 	if (!req.session.isAuthenticated) {    // user not logged in!
 		res.redirect('/login');
 	} else {	
-		res.status(200).render('Success',{UserName:req.session.UserName, PW: req.session.PW});
+		res.status(200).render('Success',{UserName:req.session.UserName, TotalNumber: req.session.TotalNumber});
 		
 	}
 });
@@ -63,6 +70,11 @@ app.post('/login', (req,res) =>{
 		console.log("Successful connection");
 
 		const DB = connection.db(dbName);
+
+		countTotalNumber(DB).then((result) =>{
+			req.session.TotalNumber = result;
+		})
+
 		loginFuction(DB, (LoginInfo) =>{
 			connection.close();
 			LoginInfo.forEach(element => {
@@ -70,9 +82,8 @@ app.post('/login', (req,res) =>{
 					console.log("Matched");
 					req.session.isAuthenticated = true;
 					req.session.UserName = req.body.txtUserName;
-					req.session.PW = req.body.txtPW;
 					req.session.userid = element.userid;
-					console.log(req.session.isAuthenticated + " " + req.session.UserName + " " + req.session.PW + " " + req.session.userid);
+					//console.log(req.session.isAuthenticated + " " + req.session.UserName + " " + req.session.PW + " " + req.session.userid);
 				}
 			});
 			res.redirect('/');
