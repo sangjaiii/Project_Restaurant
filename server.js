@@ -75,6 +75,15 @@ const loginFuction = (db, callback) => {
 	})
  }
 
+ const getRestaurant = (db, targeID, callback) =>{
+	 let restaurant = db.collection('Restaurant').find({"_id": ObjectID(targeID)});
+
+	 restaurant.toArray((err, doc) =>{
+		assert.equal(null, err);
+		callback(doc);
+	 });
+ }
+
 //End 
 
 
@@ -105,6 +114,7 @@ app.get('/', (req,res, next) => {
 
 			countTotalNumber(DB).then((result) =>{
 				res.locals.TotalNumber = result;
+				eq.session.TotalNumber = result;
 			})
 
 			getAllDocument(DB, (docs) =>{
@@ -207,19 +217,21 @@ app.get('/Rate', (req, res, next) => {
 	connection.connect((err) =>{
 
 		const db = connection.db(dbName);
-		checkIsGraded(db, targetID, req.session.userid, (result) =>{
+		getRestaurant(db, targetID, (result) =>{		
 
-			connection.close();
-			if(!result){
+			res.locals.RName = result[0].name;
+			checkIsGraded(db, targetID, req.session.userid, (result) =>{
 				
-			}
-			
-		})
+				connection.close();
+				if(!result){
+					next();
+				}			
+			})
+		})		
 	})
-
-
-
-
+})
+app.get('/Rate', (req, res) =>{
+	res.status(200).render('Rate', {UserName:req.session.UserName, RestaurantsName: res.locals.RName});
 })
 
 /*

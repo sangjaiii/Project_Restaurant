@@ -22,9 +22,6 @@
     <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-dark">
       <div class="container-fluid">
         <b><a class="navbar-brand text-white">Restaurants</a></b>
-        <span class="navbar-text">
-          Showing <%= TotalNumber%> documents (criteria: {})
-        </span>
         <div class="d-flex">
               <div class="text-white me-2">
                 <div class="mx-auto">
@@ -39,7 +36,33 @@
     <br>
     <br>
 
-    
+    <div class="container shadow p-3 mb-5 bg-white rounded">
+      <form action="/Rate" method="GET"> 
+        <h2>Rating Restaurants -- <b><%= RestaurantsName%></b></h2>
+        <hr />
+
+        <div class="row">
+          <div class="col-md-6">
+            What would rate this restaurants?
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <input type="text" name="rating" class="form-control">
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div class="col-auto">
+            <button type="submit" class="btn btn-success" >Rate!</button>
+          </div>
+          <div class="col-auto">
+            <a type="button" class="btn btn-secondary" href="/" >Back</a>
+          </div>
+        </div>
+      </form>
+
+    </div>
     
   </body>
 </html>
