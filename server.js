@@ -65,6 +65,16 @@ const loginFuction = (db, callback) => {
 	 })
  }
 
+ const checkIsGraded = (db, targeID, userid, callback) =>{
+	 let isGraded = db.collection('Restaurant').find({$and: [{"grades.userid" : userid}, {"owner" : targeID}]});
+	 //console.log(targeID);
+	 //console.log(userid);
+	 isGraded.toArray((err, docs) =>{
+		assert.equal(null, err);
+		callback(docs.toString() == ""? false: true);
+	})
+ }
+
 //End 
 
 
@@ -80,15 +90,38 @@ app.use(session({
 }));
 
 //Handling the Info Page
-app.get('/', (req,res) => {
+app.get('/', (req,res, next) => {
 	//console.log(req.session.isAuthenticated + " " + req.session.UserName + " " + req.session.PW + " " + req.session.userid);
 	if (!req.session.isAuthenticated) {    // user not logged in!
+
 		res.redirect('/login');
+
 	} else {	
-		res.status(200).render('Success',{UserName:req.session.UserName, TotalNumber: req.session.TotalNumber});
-		
+
+		const connection = new MongoClient(url, { useNewUrlParser: true });
+		connection.connect((err) =>{
+			
+			const DB = connection.db(dbName);
+
+			countTotalNumber(DB).then((result) =>{
+				res.locals.TotalNumber = result;
+			})
+
+			getAllDocument(DB, (docs) =>{
+
+				connection.close();
+				res.locals.docsJson = docs;
+				next();
+			})
+		});
 	}
 });
+
+app.get('/', (req, res) =>{
+	console.log(res.locals.docsJson);
+	res.status(200).render('Success',{UserName:req.session.UserName, TotalNumber: res.locals.TotalNumber , docJSON: JSON.stringify(res.locals.docsJson), userID: req.session.userid })
+})
+
 
 //Handling Login Page and Login procrdure
 app.get('/login', (req,res) =>{
@@ -104,10 +137,6 @@ app.post('/login', (req,res) =>{
 		console.log("Successful connection");
 
 		const DB = connection.db(dbName);
-
-		countTotalNumber(DB).then((result) =>{
-			req.session.TotalNumber = result;
-		})
 
 		loginFuction(DB, (LoginInfo) =>{
 			connection.close();
@@ -162,14 +191,42 @@ app.post('/newDoc', (req, res) =>{
 
 //Handling Logout request
 app.get('/Logout', (req, res) =>{
+
 	req.session = null;
 	res.redirect('/');
+
 })
 
+//Handling the rating page
+app.get('/Rate', (req, res, next) => {
+	
+	const targetID = req.query.restaurant;
+	let isGraded = false;
+
+	const connection = new MongoClient(url, { useNewUrlParser: true });
+	connection.connect((err) =>{
+
+		const db = connection.db(dbName);
+		checkIsGraded(db, targetID, req.session.userid, (result) =>{
+
+			connection.close();
+			if(!result){
+				
+			}
+			
+		})
+	})
+
+
+
+
+})
+
+/*
 //Handling random route, route back to home/info page
 app.get('*', (req, res) =>{
 	res.redirect('/');
 })
-
+*/
 
 app.listen(process.env.PORT || 8099);
