@@ -84,7 +84,22 @@ const loginFuction = (db, callback) => {
 	 });
  }
 
- const 
+ const rateRestaurant = (db, rate, RID, userid, callback) =>{
+	
+	db.collection('Restaurant').updateOne({
+		"_id" : ObjectId(RID)
+	}, { 
+		$push: {
+			"grades": {
+				"userid": ObjectId(userid), 
+				"score": int.parse(rate)
+			}
+		}
+	}, (err, result) =>{
+		assert.equal(null, err);
+		callback(result);
+	});
+ }
 
 //End 
 
@@ -215,8 +230,11 @@ app.get('/Rate', (req, res, next) => {
 	const targetID = req.query.restaurant;
 	let isGraded = false;
 
+	console.log(req.query.rating);
+
 	if(!req.query.rating){
 
+		console.log("Rating Page");
 		const connection = new MongoClient(url, { useNewUrlParser: true });
 		connection.connect((err) =>{
 
@@ -235,7 +253,9 @@ app.get('/Rate', (req, res, next) => {
 		})
 	}
 	else{
-
+		
+		console.log("Rated Page");
+		/*
 		const connection = new MongoClient(url, { useNewUrlParser: true });
 		connection.connection((err) =>{
 
@@ -243,7 +263,7 @@ app.get('/Rate', (req, res, next) => {
 
 
 		})
-
+		*/
 	}
 	
 })
