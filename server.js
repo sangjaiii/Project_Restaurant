@@ -84,6 +84,8 @@ const loginFuction = (db, callback) => {
 	 });
  }
 
+ const 
+
 //End 
 
 
@@ -213,22 +215,37 @@ app.get('/Rate', (req, res, next) => {
 	const targetID = req.query.restaurant;
 	let isGraded = false;
 
-	const connection = new MongoClient(url, { useNewUrlParser: true });
-	connection.connect((err) =>{
+	if(!req.query.rating){
 
-		const db = connection.db(dbName);
-		getRestaurant(db, targetID, (result) =>{		
+		const connection = new MongoClient(url, { useNewUrlParser: true });
+		connection.connect((err) =>{
 
-			res.locals.RName = result[0].name;
-			checkIsGraded(db, targetID, req.session.userid, (result) =>{
-				
-				connection.close();
-				if(!result){
-					next();
-				}			
-			})
-		})		
-	})
+			const db = connection.db(dbName);
+			getRestaurant(db, targetID, (result) =>{		
+
+				res.locals.RName = result[0].name;
+				checkIsGraded(db, targetID, req.session.userid, (result) =>{
+					
+					connection.close();
+					if(!result){
+						next();
+					}			
+				})
+			})		
+		})
+	}
+	else{
+
+		const connection = new MongoClient(url, { useNewUrlParser: true });
+		connection.connection((err) =>{
+
+			const db = connection.db(dbName);
+
+
+		})
+
+	}
+	
 })
 app.get('/Rate', (req, res) =>{
 	res.status(200).render('Rate', {UserName:req.session.UserName, RestaurantsName: res.locals.RName});
