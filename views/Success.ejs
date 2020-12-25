@@ -42,8 +42,7 @@
     <br>
 
 
-    <div class="container shadow p-3 mb-5 bg-white rounded">
-      
+    <div class="container shadow p-3 mb-5 bg-white rounded">      
 
       <h2>Restaurants Documents</h2>
       <hr />
@@ -99,7 +98,7 @@
               '</a>',
               '</div>',
               '<div class="col-auto">',
-              '<a class="btn btn-warning remove" href="/Delete?restaurant=' + row._id + '" title="Remove">',
+              '<a class="btn btn-warning remove" href="/Delete?restaurant=' + row._id + '" title="Remove" onclick="return confirm(`Confirm delete this restaurant?`)">',
                 '<i class="fa fa-trash"></i> Remove',
               '</a>',
               '</div>');

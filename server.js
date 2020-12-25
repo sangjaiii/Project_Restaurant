@@ -9,6 +9,7 @@ const ObjectId = require('mongodb').ObjectID;
 const fs = require('fs');
 const formidable = require('formidable');
 const { ObjectID } = require('mongodb');
+const { nextTick } = require('process');
 const url = 'mongodb+srv://ProjectAccess:yTUyYnl4jrE8RObp@cluster0.0czjw.mongodb.net/381_Project_Restaurant?retryWrites=true&w=majority';  // MongoDB Atlas Connection URL
 const dbName = '381_Project_Restaurant'; // Database Name
 const secKey = "I tried hard!";
@@ -88,7 +89,7 @@ const loginFuction = (db, callback) => {
 
  const rateRestaurant = (db, rate, RID, userid, callback) =>{
 	
-	db.collection('Restaurant').updateOne({
+	db.collection('Restaurant').updateOne({	
 		"_id" : ObjectId(RID)
 	}, { 
 		$push: {
@@ -102,6 +103,22 @@ const loginFuction = (db, callback) => {
 		callback(result);
 	});
  }
+
+ const deleteRestaurant = (db, targetID, callback) =>{
+
+	db.collection('Restaurant').remove({
+
+		"_id": ObjectID(targetID)
+
+	}, (err, result) =>{
+
+		assert.equal(null, err);
+		callback(result);
+	});
+
+ }
+
+
 
 //End 
 
@@ -133,7 +150,7 @@ app.get('/', (req,res, next) => {
 
 			countTotalNumber(DB).then((result) =>{
 				res.locals.TotalNumber = result;
-				eq.session.TotalNumber = result;
+				req.session.TotalNumber = result;
 			})
 
 			getAllDocument(DB, (docs) =>{
@@ -283,6 +300,40 @@ app.get('/Rate', (req, res, next) => {
 })
 app.get('/Rate', (req, res) =>{
 	res.status(200).render('Rate', {UserName:req.session.UserName, RestaurantsName: res.locals.RName, RID: res.locals.RID});
+})
+
+
+//Handling Delete action and route to delete success/fail page
+app.get("/Delete", (req, res, next) =>{
+
+	const targetID = req.query.restaurant;
+	const connection = new MongoClient(url, { useNewUrlParser: true });
+	connection.connect((err) =>{
+
+		const db = connection.db(dbName);
+
+		getRestaurant(db, targetID, (result) =>{
+
+			const owner = result[0].owner;
+			if(ObjectID(req.session.userid) == owner){
+				deleteRestaurant(db, targetID, (result) =>{
+
+					connection.close();
+					console.log(result);
+					next();
+		
+				});
+			}else{
+
+				res.status(200).render('deleteFail', {UserName:req.session.UserName});
+
+			}
+		})
+	});
+
+});
+app.get("/Delete", (req, res) =>{
+	res.status(200).render('Deleted', {UserName:req.session.UserName});
 })
 
 /*
