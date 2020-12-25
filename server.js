@@ -265,7 +265,7 @@ app.get('/Rate', (req, res, next) => {
 			rateRestaurant(db, req.query.rating, req.query.RID, req.session.userid, (result) =>{
 				connection.close()
 				console.log(result);
-				res.status(200).render()
+				res.status(200).render("Rated", {UserName:req.session.UserName} )
 			})
 
 		})
