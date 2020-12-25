@@ -66,11 +66,13 @@ const loginFuction = (db, callback) => {
  }
 
  const checkIsGraded = (db, targeID, userid, callback) =>{
-	 let isGraded = db.collection('Restaurant').find({$and: [{"grades.userid" : userid}, {"owner" : targeID}]});
+	 let isGraded = db.collection('Restaurant').find({$and: [{"grades.userid" : ObjectID(userid)}, {"_id" : ObjectID(targeID)}]});
 	 //console.log(targeID);
 	 //console.log(userid);
+	 console.log(isGraded);
 	 isGraded.toArray((err, docs) =>{
 		assert.equal(null, err);
+		console.log(docs);
 		callback(docs.toString() == ""? false: true);
 	})
  }
@@ -145,7 +147,7 @@ app.get('/', (req,res, next) => {
 });
 
 app.get('/', (req, res) =>{
-	console.log(res.locals.docsJson);
+	//console.log(res.locals.docsJson);
 	res.status(200).render('Success',{UserName:req.session.UserName, TotalNumber: res.locals.TotalNumber , docJSON: JSON.stringify(res.locals.docsJson), userID: req.session.userid })
 })
 
@@ -191,7 +193,7 @@ app.post('/newDoc', (req, res) =>{
 	let photo, photo_mimetype = "";
 	form.parse(req, (err, fields, files) =>{
 		
-		console.log(fields);
+		//console.log(fields);
 
 		if(files.picPhoto.size > 0){
 			fs.readFile(files.picPhoto.path, (err, data) =>{
@@ -230,7 +232,7 @@ app.get('/Rate', (req, res, next) => {
 	const targetID = req.query.restaurant;
 	let isGraded = false;
 
-	console.log(req.query.rating);
+	//console.log(req.query.rating);
 
 	if(!req.query.rating){
 
@@ -247,9 +249,14 @@ app.get('/Rate', (req, res, next) => {
 				checkIsGraded(db, targetID, req.session.userid, (result) =>{
 					
 					connection.close();
+					console.log(result);
 					if(!result){
 						next();
-					}			
+					}
+					
+				res.status(200).render("FailRate", {UserName:req.session.UserName});
+					
+					
 				})
 			})		
 		})
@@ -263,11 +270,12 @@ app.get('/Rate', (req, res, next) => {
 
 			const db = connection.db(dbName);
 			rateRestaurant(db, req.query.rating, req.query.RID, req.session.userid, (result) =>{
+
 				connection.close()
 				console.log(result);
-				res.status(200).render("Rated", {UserName:req.session.UserName} )
+				res.status(200).render("Rated", {UserName:req.session.UserName});
+				
 			})
-
 		})
 		
 	}
