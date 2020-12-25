@@ -310,6 +310,7 @@ app.get("/Delete", (req, res, next) =>{
 	const connection = new MongoClient(url, { useNewUrlParser: true });
 	connection.connect((err) =>{
 
+		assert.equal(err,null);
 		const db = connection.db(dbName);
 
 		getRestaurant(db, targetID, (result) =>{
@@ -340,7 +341,21 @@ app.get("/Delete", (req, res) =>{
 //Handling the Detial Page
 app.get("/Detail", (req, res, next) =>{
 
-	const 
+	const targetID = req.query.restaurant;
+	const connection = new MongoClient(url, { useNewUrlParser: true });
+	connection.connect((err) =>{
+
+		const db = connection.db(dbName)
+		getRestaurant(db, targetID, (result) =>{
+
+			connection.close();
+			console.log(result);
+
+		})
+
+
+	})
+
 
 })
 
