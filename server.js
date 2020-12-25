@@ -336,6 +336,14 @@ app.get("/Delete", (req, res) =>{
 	res.status(200).render('Deleted', {UserName:req.session.UserName});
 })
 
+
+//Handling the Detial Page
+app.get("/Detail", (req, res, next) =>{
+
+	const 
+
+})
+
 /*
 //Handling random route, route back to home/info page
 app.get('*', (req, res) =>{
