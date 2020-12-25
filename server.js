@@ -22,6 +22,7 @@ app.use(express.static("Pic"));
 
 //Function For CRUD
 const loginFuction = (db, callback) => {
+
 	let cursor = db.collection('Login_Info').find({}, {"userName":1, "password":1, "userid": 1, "_id": 0});
 	
 	cursor.toArray((err, docs) =>{
@@ -115,6 +116,17 @@ const loginFuction = (db, callback) => {
 		assert.equal(null, err);
 		callback(result);
 	});
+
+ }
+
+ const getUser = (db, userid, callback) =>{
+
+	let cursor = db.collection('Login_Info').find({"userid": ObjectID(userid)});
+
+	cursor.toArray((err, doc) =>{
+		assert.equal(null, err);
+		callback(doc);
+	 });
 
  }
 
@@ -345,17 +357,49 @@ app.get("/Detail", (req, res, next) =>{
 	const connection = new MongoClient(url, { useNewUrlParser: true });
 	connection.connect((err) =>{
 
-		const db = connection.db(dbName)
+		assert.equal(null, err);
+		const db = connection.db(dbName);
+
+
 		getRestaurant(db, targetID, (result) =>{
 
-			connection.close();
-			console.log(result);
+			res.locals.RDetatil = result;
+			getUser(db, result[0].owner, (result) =>{
 
-		})
+				res.locals.ownerName = result[0].userName;
+				next();
+
+			});
+
+		});
+
+	});
+})
+app.get("/Detail", (req, res) =>{
+
+	const RDetail = res.locals.RDetatil[0]
+	res.status(200).render('Detail', {
+		UserName:req.session.UserName, 
+		restaurantsName: RDetail.name,
+		photoMimetype: RDetail.photo_mimetype, 
+		photoBase64: RDetail.photo,
+		Borough: RDetail.borough,
+		Cuisine: RDetail.cuisine,
+		Street: RDetail.address.street,
+		Building: RDetail.address.building,
+		Zipcode: RDetail.address.zipcode,
+		GPSX: RDetail.address.coord[0],
+		GPSY: RDetail.address.coord[1],
+		Owner: res.locals.ownerName
+	});
+
+})
 
 
-	})
+//Handling the map
+app.get("/Map", (req, res) =>{
 
+	res.status(200).render('Map', {UserName:req.session.UserName, GPSX: 35.691780, GPSY: 139.699367});
 
 })
 

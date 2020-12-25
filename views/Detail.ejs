@@ -22,6 +22,9 @@
     <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-dark">
       <div class="container-fluid">
         <b><a class="navbar-brand text-white">Restaurants</a></b>
+        <span class="navbar-text">
+          <%= restaurantsName %>
+        </span>
         <div class="d-flex">
               <div class="text-white me-2">
                 <div class="mx-auto">
@@ -39,7 +42,36 @@
     <div class="container shadow p-3 mb-5 bg-white rounded">
       <div class="row justify-content-md-center">
         <div class="col-md-12">
-          <img src="data:<%= photoMimetype %>;base64, <%= photoBase64 %>">
+          <img src="data:<%= photoMimetype %>;base64, <%= photoBase64 %>" class="figure-img img-thumbnail rounded">
+        </div>
+      </div>
+      <div class="row justify-content-md-center">
+        <div class="col-md-6">
+          <span class="badge rounded-pill bg-light">Borough</span>  : <span class="h2"><%= Borough %></span>
+        </div>
+        <div class="col-md-6">
+          <span class="badge rounded-pill bg-light">Cuisine</span>  : <span class="h2"><%= Cuisine %></span>
+        </div>
+      </div>
+      <div class="row justify-content-md-center">
+        <div class="col-md-6">
+          <span class="badge rounded-pill bg-light">Street</span>   : <span class="h2"><%= Street %></span>
+        </div>
+        <div class="col-md-6">
+          <span class="badge rounded-pill bg-light">Building</span> : <span class="h2"><%= Building %></span>
+        </div>
+      </div>
+      <div class="row justify-content-md-center">
+        <div class="col-md-6">
+          <span class="badge rounded-pill bg-light">Zipcode</span>  : <span class="h2"><%= Zipcode %></span>
+        </div>
+        <div class="col-md-6">
+          <span class="badge rounded-pill bg-light">GPS</span>      : <span class="h2">[<%= GPSX %>, <%= GPSY %>]</span>
+        </div>
+      </div>
+      <div class="row ">
+        <div class="col-md-6">
+          <span class="badge rounded-pill bg-light">Created By: </span>  : <span class="h2"><%= Owner %></span>
         </div>
       </div>
     </div>
