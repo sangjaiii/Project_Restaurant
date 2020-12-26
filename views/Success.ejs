@@ -58,14 +58,14 @@
       data-toolbar="#toolbar">
         <thead>
           <tr>
-            <th data-field="name">Restaurants Name</th>
-            <th data-field="option" data-formatter="optionFormatter" data-width="350"></th>
+            <th data-field="name" data-formatter="detailLinkFormatter">Restaurants Name</th>
+            <th data-field="option" data-formatter="optionFormatter" data-width="340"></th>
           </tr>
         </thead>
       </table>
     </div>
-    <input type="text" id="docJSON" value="<%= docJSON%>" hidden>  
-    <input type="hidden" id="userID" value="<%= userID%>" />
+    <input type="text" id="docJSON" value="<%= docJSON %>" hidden>  
+    <input type="hidden" id="userID" value="<%= userID %>" />
     <script>
 
       $( document ).ready(function() {
@@ -76,9 +76,19 @@
         })
       });
        
+      function detailLinkFormatter(value, row, index) {
+
+        let aboutToJoin = [];
+
+        aboutToJoin.push('<a class="btn btn-link" href="/Detail?restaurant=' + row._id + '">' + value + '</a>');
+
+        return aboutToJoin.join('');
+
+      }
+
       function optionFormatter(value, row, index) {
 
-        let aboutToJoin = []
+        let aboutToJoin = [];
         const userID = $("#userID").val();
         const ownerID = row.owner;
         aboutToJoin.push(

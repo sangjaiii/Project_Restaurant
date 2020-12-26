@@ -40,41 +40,82 @@
     <br>
     
     <div class="container shadow p-3 mb-5 bg-white rounded">
-      <div class="row justify-content-md-center">
+      <div class="row justify-content-md-center photoDiv">
         <div class="col-md-12">
           <img src="data:<%= photoMimetype %>;base64, <%= photoBase64 %>" class="figure-img img-thumbnail rounded">
         </div>
       </div>
       <div class="row justify-content-md-center">
-        <div class="col-md-6">
-          <span class="badge rounded-pill bg-light">Borough</span>  : <span class="h2"><%= Borough %></span>
+        <div class="col-6">
+          <span class="badge rounded-pill bg-info">Borough</span>  : <span class="h2"><%= Borough %></span>
         </div>
-        <div class="col-md-6">
-          <span class="badge rounded-pill bg-light">Cuisine</span>  : <span class="h2"><%= Cuisine %></span>
-        </div>
-      </div>
-      <div class="row justify-content-md-center">
-        <div class="col-md-6">
-          <span class="badge rounded-pill bg-light">Street</span>   : <span class="h2"><%= Street %></span>
-        </div>
-        <div class="col-md-6">
-          <span class="badge rounded-pill bg-light">Building</span> : <span class="h2"><%= Building %></span>
+        <div class="col-6">
+          <span class="badge rounded-pill bg-info">Cuisine</span>  : <span class="h2"><%= Cuisine %></span>
         </div>
       </div>
       <div class="row justify-content-md-center">
-        <div class="col-md-6">
-          <span class="badge rounded-pill bg-light">Zipcode</span>  : <span class="h2"><%= Zipcode %></span>
+        <div class="col-6">
+          <span class="badge rounded-pill bg-info">Street</span>   : <span class="h2"><%= Street %></span>
         </div>
-        <div class="col-md-6">
-          <span class="badge rounded-pill bg-light">GPS</span>      : <span class="h2">[<%= GPSX %>, <%= GPSY %>]</span>
-        </div>
-      </div>
-      <div class="row ">
-        <div class="col-md-6">
-          <span class="badge rounded-pill bg-light">Created By: </span>  : <span class="h2"><%= Owner %></span>
+        <div class="col-6">
+          <span class="badge rounded-pill bg-info">Building</span> : <span class="h2"><%= Building %></span>
         </div>
       </div>
-    </div>
-    
+      <div class="row justify-content-md-center">
+        <div class="col-6">
+          <span class="badge rounded-pill bg-info">Zipcode</span>  : <span class="h2"><%= Zipcode %></span>
+        </div>
+        <div class="col-6">
+          <span class="badge rounded-pill bg-info">GPS</span>      : <span class="h2">[<%= GPSX %>, <%= GPSY %>]</span><br>
+          <div class="mapDiv">
+            <a href="/Map?GPSX=<%= GPSX %>&GPSY=<%= GPSY %>">map</a>
+          </div>
+        </div>
+      </div>
+      <div class="row ">        
+        <div class="col-6">
+          <span class="badge rounded-pill bg-info"> Rating</span>  : <div class="h5 rating"></div>
+        </div>
+        <div class="col-6">
+          <span class="badge rounded-pill bg-info">Created By </span>  : <span class="h2"><%= Owner %></span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <br>
+          <a class="btn btn-secondary" href="/">Back to home</a>
+        </div>
+      </div>
+    </div>    
+
+    <input type="hidden" id="withPhoto" value="<%= withPhoto %>">
+    <input type="hidden" id="withMap" value="<%= withMap %>">
+    <input type="hidden" id="ratingList" value="<%= ratingList %>">
+
+
   </body>
+
+  <script>
+
+    $(document).ready(() =>{
+
+      if($("#withPhoto").val() == "false")
+        $(".photoDiv")[0].setAttribute("hidden", "true");
+
+      if($("#withMap").val() == "false")
+        $(".mapDiv")[0].setAttribute("hidden", "true");
+
+      console.log($("#ratingList").val());  
+
+      JSON.parse($("#ratingList").val()).forEach((element, index) => {
+
+        $(".rating").append("<span>" + (index + 1) + ". " + element.score + " (" + element.userName + ") </span><br>");
+
+      });
+      
+
+    })
+
+  </script>
+
 </html>

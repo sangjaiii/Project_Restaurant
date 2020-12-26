@@ -10,6 +10,7 @@ const fs = require('fs');
 const formidable = require('formidable');
 const { ObjectID } = require('mongodb');
 const { nextTick } = require('process');
+const { call } = require('body-parser');
 const url = 'mongodb+srv://ProjectAccess:yTUyYnl4jrE8RObp@cluster0.0czjw.mongodb.net/381_Project_Restaurant?retryWrites=true&w=majority';  // MongoDB Atlas Connection URL
 const dbName = '381_Project_Restaurant'; // Database Name
 const secKey = "I tried hard!";
@@ -71,10 +72,10 @@ const loginFuction = (db, callback) => {
 	 let isGraded = db.collection('Restaurant').find({$and: [{"grades.userid" : ObjectID(userid)}, {"_id" : ObjectID(targeID)}]});
 	 //console.log(targeID);
 	 //console.log(userid);
-	 console.log(isGraded);
+	 //console.log(isGraded);
 	 isGraded.toArray((err, docs) =>{
 		assert.equal(null, err);
-		console.log(docs);
+		//console.log(docs);
 		callback(docs.toString() == ""? false: true);
 	})
  }
@@ -130,6 +131,16 @@ const loginFuction = (db, callback) => {
 
  }
 
+ const getUserList = (db, callback) =>{
+
+	let cursor = db.collection('Login_Info').find({}, {"userName": 1, "_id": 0, "password": 0, "userid": 0});
+
+	cursor.toArray((err, doc) =>{
+		assert.equal(null, err);
+		callback(doc);
+	 });
+
+ }
 
 
 //End 
@@ -240,7 +251,7 @@ app.post('/newDoc', (req, res) =>{
 			const db = connection.db(dbName)				
 			insertNewDoc(db, fields.txtName, fields.txtBorough, fields.txtCuisine, fields.txtStreet, fields.txtBuilding, fields.txtZipcode, fields.txtGPS_lon, fields.txtGPS_lat, photo, photo_mimetype, req.session.userid, (result) =>{
 				connection.close();
-				console.log(result);
+				//console.log(result);
 			});	
 		});
 	});
@@ -278,7 +289,7 @@ app.get('/Rate', (req, res, next) => {
 				checkIsGraded(db, targetID, req.session.userid, (result) =>{
 					
 					connection.close();
-					console.log(result);
+					//console.log(result);
 					if(!result){
 						next();
 					}
@@ -301,7 +312,7 @@ app.get('/Rate', (req, res, next) => {
 			rateRestaurant(db, req.query.rating, req.query.RID, req.session.userid, (result) =>{
 
 				connection.close()
-				console.log(result);
+				//console.log(result);
 				res.status(200).render("Rated", {UserName:req.session.UserName});
 				
 			})
@@ -328,11 +339,12 @@ app.get("/Delete", (req, res, next) =>{
 		getRestaurant(db, targetID, (result) =>{
 
 			const owner = result[0].owner;
-			if(ObjectID(req.session.userid) == owner){
+			//console.log(owner);
+			if(req.session.userid == owner){
 				deleteRestaurant(db, targetID, (result) =>{
 
 					connection.close();
-					console.log(result);
+					//console.log(result);
 					next();
 		
 				});
@@ -364,6 +376,7 @@ app.get("/Detail", (req, res, next) =>{
 		getRestaurant(db, targetID, (result) =>{
 
 			res.locals.RDetatil = result;
+
 			getUser(db, result[0].owner, (result) =>{
 
 				res.locals.ownerName = result[0].userName;
@@ -375,23 +388,56 @@ app.get("/Detail", (req, res, next) =>{
 
 	});
 })
-app.get("/Detail", (req, res) =>{
+app.get("/Detail", (req, res, next) =>{
 
 	const RDetail = res.locals.RDetatil[0]
-	res.status(200).render('Detail', {
-		UserName:req.session.UserName, 
-		restaurantsName: RDetail.name,
-		photoMimetype: RDetail.photo_mimetype, 
-		photoBase64: RDetail.photo,
-		Borough: RDetail.borough,
-		Cuisine: RDetail.cuisine,
-		Street: RDetail.address.street,
-		Building: RDetail.address.building,
-		Zipcode: RDetail.address.zipcode,
-		GPSX: RDetail.address.coord[0],
-		GPSY: RDetail.address.coord[1],
-		Owner: res.locals.ownerName
-	});
+	const withphoto = RDetail.photo == "" || RDetail.photo_mimetype == ""? false:true;
+	const withmap = RDetail.address.coord[0] == "" && RDetail.address.coord[1]? false:true;
+	let ratingList = [];
+
+	const connection = new MongoClient(url, { useNewUrlParser: true });
+		connection.connect((err) =>{
+
+			assert.equal(null, err);
+			const db = connection.db(dbName);
+			getUserList(db, (result) =>{
+
+				connection.close();
+				(RDetail.grades).forEach(element => {
+					result.forEach(things => {
+						if(element.userid.toString() == things.userid.toString()){
+							ratingList.push({
+								"userName": things.userName,
+								"score": element.score
+							});
+						}
+
+					});
+				});
+
+				res.status(200).render('Detail', {
+					UserName:req.session.UserName, 
+					restaurantsName: RDetail.name,
+					photoMimetype: RDetail.photo_mimetype, 
+					photoBase64: RDetail.photo,
+					Borough: RDetail.borough,
+					Cuisine: RDetail.cuisine,
+					Street: RDetail.address.street,
+					Building: RDetail.address.building,
+					Zipcode: RDetail.address.zipcode,
+					GPSX: RDetail.address.coord[0],
+					GPSY: RDetail.address.coord[1],
+					Owner: res.locals.ownerName,
+					ratingList: JSON.stringify(ratingList),
+					withPhoto: withphoto,
+					withMap: withmap
+				});						
+			});
+		});
+
+	
+	
+	
 
 })
 
@@ -399,7 +445,9 @@ app.get("/Detail", (req, res) =>{
 //Handling the map
 app.get("/Map", (req, res) =>{
 
-	res.status(200).render('Map', {UserName:req.session.UserName, GPSX: 35.691780, GPSY: 139.699367});
+	const GPS_X = req.query.GPSX;
+	const GPS_Y = req.query.GPSY;
+	res.status(200).render('Map', {UserName:req.session.UserName, GPSX: GPS_X, GPSY: GPS_Y});
 
 })
 

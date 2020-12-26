@@ -20,6 +20,9 @@
     <script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
   </head>
+  <Style>
+    #mapid { height: 800px; }
+  </Style>
   <body>
       
     <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-dark">
@@ -35,10 +38,16 @@
         </div>      
     </nav> 
 
+    <br>
+    <br>
+    <br>
+    
     <div class="container shadow p-3 mb-5 bg-white rounded">
         <div id="mapid">
 
         </div>
+        <br>
+        <a class="btn btn-secondary" href="/">Back to home</a>
     </div>
 
     <input type="hidden" value="<%= GPSX %>" id="GPS_X">
@@ -46,12 +55,20 @@
 
     <script>
       
-        var GPS_X = parseInt($("#GPS_X").val());
-        var GPS_Y = parseInt($("#GPS_Y").val());
+        var GPS_X = parseFloat($("#GPS_X").val());
+        var GPS_Y = parseFloat($("#GPS_Y").val());
         
-        var mymap = L.map('mapid').setView([GPS_X, GPS_Y], 18);
+        var mymap = L.map('mapid', {
+          center: [GPS_X, GPS_Y],
+          zoom: 18
+        });
   
-        //L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mymap);
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(mymap);
+
+
+        var marker = L.marker([GPS_X, GPS_Y]).addTo(mymap);
         
       </script>
    
