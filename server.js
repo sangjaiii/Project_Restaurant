@@ -56,7 +56,7 @@ const loginFuction = (db, callback) => {
 	 }, (err, result) =>{
 		 assert.equal(null, err);
 		 callback(result);
-	 })
+	 });
  }
 
  const getAllDocument = (db, callback) =>{
@@ -142,6 +142,60 @@ const loginFuction = (db, callback) => {
 
  }
 
+ const updateRestaurantWithPhoto = (db, RID, name, borough, cuisine, street, building, zipcode, lon, lat, photo, photo_mimetype, callback) =>{
+
+	db.collection('Restaurant').updateOne(
+		{
+			"_id": ObjectID(RID)
+		},
+		{
+			$set: 	{
+						"name": name,
+						"borough": borough,
+						"cuisine": cuisine,
+						"photo": photo,
+						"photo_mimetype": photo_mimetype,
+						"address": {
+							"street": street,
+							"building": building,
+							"zipcode": zipcode,
+							"coord": [lon, lat]
+						}
+					}
+		}, 
+		(err, result) =>{
+			assert.equal(null, err);
+			callback(result);
+		});
+
+ }
+
+ const updateRestaurantWOPhoto = (db, RID, name, borough, cuisine, street, building, zipcode, lon, lat, callback) =>{
+
+	db.collection('Restaurant').updateOne(
+		{
+			"_id": ObjectID(RID)
+		},
+		{
+			$set: 	{
+						"name": name,
+						"borough": borough,
+						"cuisine": cuisine,
+						"address": {
+							"street": street,
+							"building": building,
+							"zipcode": zipcode,
+							"coord": [lon, lat]
+						}
+					}
+		}, 
+		(err, result) =>{
+			assert.equal(null, err);
+			callback(result);
+		});
+
+ }
+
 
 //End 
 
@@ -156,6 +210,23 @@ app.use(session({
     Name: "First Cookie try",
     keys: [secKey]
 }));
+
+
+//Handling random route, route back to home/info page, accessing page that require login in
+app.get('*', (req, res, next) =>{
+	
+	if(!req.session.isAuthenticated){
+
+		res.status(200).render('Login',{});
+
+	}else{
+
+		next();
+
+	}
+
+})
+
 
 //Handling the Info Page
 app.get('/', (req,res, next) => {
@@ -237,23 +308,27 @@ app.post('/newDoc', (req, res) =>{
 
 		if(files.picPhoto.size > 0){
 			fs.readFile(files.picPhoto.path, (err, data) =>{
+
 				photo = new Buffer.from(data).toString('base64');
 				photo_mimetype = files.picPhoto.type;
-			})
+
+				const connection = new MongoClient(url, { useNewUrlParser: true });
+				connection.connect((err) =>{
+					
+					assert.equal(err, null);
+					console.log("Successful connection");
+
+					const db = connection.db(dbName)				
+					insertNewDoc(db, fields.txtName, fields.txtBorough, fields.txtCuisine, fields.txtStreet, fields.txtBuilding, fields.txtZipcode, fields.txtGPS_lon, fields.txtGPS_lat, photo, photo_mimetype, req.session.userid, (result) =>{
+						connection.close();
+						//console.log(result);
+					});	
+				});
+
+			});
+
 		}
 
-		const connection = new MongoClient(url, { useNewUrlParser: true });
-		connection.connect((err) =>{
-			
-			assert.equal(err, null);
-			console.log("Successful connection");
-
-			const db = connection.db(dbName)				
-			insertNewDoc(db, fields.txtName, fields.txtBorough, fields.txtCuisine, fields.txtStreet, fields.txtBuilding, fields.txtZipcode, fields.txtGPS_lon, fields.txtGPS_lat, photo, photo_mimetype, req.session.userid, (result) =>{
-				connection.close();
-				//console.log(result);
-			});	
-		});
 	});
 	res.status(200).render('CreateNewDoc', {UserName:req.session.UserName, TotalNumber: req.session.TotalNumber, isAlert: "true", isInsert: "true"});
 });
@@ -434,11 +509,6 @@ app.get("/Detail", (req, res, next) =>{
 				});						
 			});
 		});
-
-	
-	
-	
-
 })
 
 
@@ -449,13 +519,97 @@ app.get("/Map", (req, res) =>{
 	const GPS_Y = req.query.GPSY;
 	res.status(200).render('Map', {UserName:req.session.UserName, GPSX: GPS_X, GPSY: GPS_Y});
 
+});
+
+
+//Handling the Editing page and action
+app.get("/Edit", (req, res, next) =>{
+
+	const RID = req.query.restaurant;
+	const connection = new MongoClient(url, { useNewUrlParser: true });
+	connection.connect((err) =>{
+
+		assert.equal(null, err);
+		const db = connection.db(dbName);
+
+		getRestaurant(db, RID, (result) =>{
+
+			connection.close();
+			res.locals.restaurantJSON = result;
+			next();
+
+		});
+
+	})
+
+});
+app.get("/Edit", (req, res) =>{
+
+	const RID = req.query.restaurant;
+	const RDetail = res.locals.restaurantJSON[0];
+	res.status(200).render('Edit', {
+		UserName:req.session.UserName, 
+		Name: RDetail.name,
+		Borough: RDetail.borough,
+		Cuisine: RDetail.cuisine,
+		Street: RDetail.address.street,
+		Building: RDetail.address.building,
+		Zipcode: RDetail.address.zipcode,
+		Lon: RDetail.address.coord[0],
+		Lat: RDetail.address.coord[1],
+		RID: RID
+	});
+
+})
+app.post("/Edit", (req, res) =>{
+	
+	const form = new formidable.IncomingForm();
+	let photo, photo_mimetype = "";
+	form.parse(req, (err, fields, files) =>{		
+
+		const connection = new MongoClient(url, { useNewUrlParser: true });
+		connection.connect((err) =>{
+
+			assert.equal(err, null);
+			console.log("Successful connection");
+			const db = connection.db(dbName)
+
+			if(files.picPhoto.size > 0){
+
+				fs.readFile(files.picPhoto.path, (err, data) =>{
+
+					photo = new Buffer.from(data).toString('base64');
+					photo_mimetype = files.picPhoto.type;
+
+					updateRestaurantWithPhoto(db, fields.RID, fields.txtName, fields.txtBorough, fields.txtCuisine, fields.txtStreet, fields.txtBuilding, fields.txtZipcode, fields.txtGPS_lon, fields.txtGPS_lat, photo, photo_mimetype, (result) =>{
+						
+						connection.close();
+						//console.log(result);
+						res.redirect('/Detail?restaurant=' + fields.RID);
+
+					});
+
+				});
+
+			}else{
+
+				updateRestaurantWOPhoto(db, fields.RID, fields.txtName, fields.txtBorough, fields.txtCuisine, fields.txtStreet, fields.txtBuilding, fields.txtZipcode, fields.txtGPS_lon, fields.txtGPS_lat, (result) =>{
+					
+					connection.close();
+					//console.log(result);
+					res.redirect('/Detail?restaurant=' + fields.RID);
+
+				});
+
+			}
+
+		});
+
+	});
+
 })
 
-/*
-//Handling random route, route back to home/info page
-app.get('*', (req, res) =>{
-	res.redirect('/');
-})
-*/
+
+
 
 app.listen(process.env.PORT || 8099);

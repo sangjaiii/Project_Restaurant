@@ -19,7 +19,115 @@
     <script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.js"></script>
   </head>
   <body>
-      
+    <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-dark">
+      <div class="container-fluid">
+        <b><a class="navbar-brand text-white">Restaurants</a></b>
+        <div class="d-flex">
+              <div class="text-white me-2">
+                <div class="mx-auto">
+                  Hi! <%= UserName %>! <a href="logout">Logout</a>
+                </div>
+              </div>
+        </div>
+      </div>      
+    </nav>
+
+    <br>
+    <br>
+    <br>
+
+
+    <div class="container shadow p-3 mb-5 bg-white rounded">        
+
+      <h2>Editing <span class="text-success"><%= Name %></span> Info</h2>
+      <hr />
+
+      <form action="/Edit" method="POST" enctype="multipart/form-data">
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="txtName">Name: </label>
+                    <input type="text" class="form-control" name="txtName" placeholder="" value="<%= Name %>" required>
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="txtBorough">Borough: </label>
+                    <input type="text" class="form-control" name="txtBorough"  placeholder="" value="<%= Borough %>">
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="txtCuisine">Cuisine: </label>
+                    <input type="text" class="form-control" name="txtCuisine"  placeholder="" value="<%= Cuisine %>">
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="txtStreet">Street: </label>
+                    <input type="text" class="form-control" name="txtStreet"  placeholder="" value="<%= Street %>">
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="txtBuilding">Building: </label>
+                    <input type="text" class="form-control" name="txtBuilding"  placeholder="" value="<%= Building %>">
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="txtZipcode">Zipcode: </label>
+                    <input type="text" class="form-control" name="txtZipcode"  placeholder="" value="<%= Zipcode %>">
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="txtGPS_lon">GPS Coordinates (lon.): </label>
+                    <input type="text" class="form-control" name="txtGPS_lon"  placeholder="" value="<%= Lon %>">
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="txtGPS_lat">GPS Coordinates (lat.): </label>
+                    <input type="text" class="form-control" name="txtGPS_lat"  placeholder="" value="<%= Lat %>">
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="picPhoto">Photo: </label>
+                    <input type="file" class="form-control" name="picPhoto"  placeholder="" >
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-auto">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+              <div class="col-auto">
+                  <a type="button" class="btn btn-secondary" href="/">Back</a>
+              </div>
+          </div>
+          <input type="hidden" name="RID" value="<%= RID %>">
+      </form>
+  </div>
+
+
     
   </body>
 </html>
