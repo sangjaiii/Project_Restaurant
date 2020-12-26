@@ -17,6 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.1/dist/bootstrap-table.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.1/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
 
 
   </head>
@@ -55,10 +56,14 @@
 
       <table 
       id="table" 
-      data-toolbar="#toolbar">
+      data-toolbar="#toolbar"
+      data-filter-control="true"
+      >
         <thead>
           <tr>
-            <th data-field="name" data-formatter="detailLinkFormatter">Restaurants Name</th>
+            <th data-field="name" data-formatter="detailLinkFormatter" data-filter-control="input">Restaurants Name</th>
+            <th data-field="borough" data-filter-control="input">Borough</th>
+            <th data-field="cuisine" data-filter-control="input">Cuisine</th>
             <th data-field="option" data-formatter="optionFormatter" data-width="340"></th>
           </tr>
         </thead>

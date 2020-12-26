@@ -196,6 +196,44 @@ const loginFuction = (db, callback) => {
 
  }
 
+ const searchRestaurantByName = (db, Name, callback) =>{
+
+	let cursor = db.collection('Restaurant').find({
+		"name": Name
+	});
+
+	cursor.toArray((err, doc) =>{
+		assert.equal(null, err);
+		callback(doc);
+	 });
+	
+ }
+
+ const searchRestaurantByBorough = (db, Borough, callback) =>{
+
+	let cursor = db.collection('Restaurant').find({
+		"borough": Borough
+	});
+
+	cursor.toArray((err, doc) =>{
+		assert.equal(null, err);
+		callback(doc);
+	 });
+	
+ }
+
+ const searchRestaurantByCuisine = (db, Cuisine, callback) =>{
+
+	let cursor = db.collection('Restaurant').find({
+		"cuisine": Cuisine
+	});
+
+	cursor.toArray((err, doc) =>{
+		assert.equal(null, err);
+		callback(doc);
+	 });
+	
+ }
 
 //End 
 
@@ -256,7 +294,6 @@ app.get('/', (req,res, next) => {
 		});
 	}
 });
-
 app.get('/', (req, res) =>{
 	//console.log(res.locals.docsJson);
 	res.status(200).render('Success',{UserName:req.session.UserName, TotalNumber: res.locals.TotalNumber , docJSON: JSON.stringify(res.locals.docsJson), userID: req.session.userid })
@@ -293,6 +330,7 @@ app.post('/login', (req,res) =>{
 		});
 	})
 });
+
 
 // Handling new document page and Adding new document
 app.get('/newDoc', (req, res) =>{
@@ -333,13 +371,6 @@ app.post('/newDoc', (req, res) =>{
 	res.status(200).render('CreateNewDoc', {UserName:req.session.UserName, TotalNumber: req.session.TotalNumber, isAlert: "true", isInsert: "true"});
 });
 
-//Handling Logout request
-app.get('/Logout', (req, res) =>{
-
-	req.session = null;
-	res.redirect('/');
-
-})
 
 //Handling the rating page
 app.get('/Rate', (req, res, next) => {
@@ -607,8 +638,90 @@ app.post("/Edit", (req, res) =>{
 
 	});
 
+});
+
+
+//Handling the api 
+app.get("/api/restaurant", (req, res) =>{
+
+	const connection = new MongoClient(url, { useNewUrlParser: true });
+	connection.connect((err) =>{
+
+		assert.equal(null, err);
+		const db = connection.db(dbName);
+		getAllDocument(db, (result) =>{
+
+			connection.close();
+			res.status(200).type('json').json(result).end();
+
+		});
+
+	});
+
+})
+app.get("/api/restaurant/name/:name", (req, res) =>{
+
+	const name = req.params.name;
+	const connection = new MongoClient(url, { useNewUrlParser: true });
+	connection.connect((err) =>{
+
+		assert.equal(null, err);
+		const db = connection.db(dbName);
+		searchRestaurantByName(db, name, (result) =>{
+
+			connection.close();
+			res.status(200).type('json').json(result).end();
+
+		})
+
+	});
+
+})
+app.get("/api/restaurant/borough/:borough", (req, res) =>{
+
+	const borough = req.params.borough;
+	const connection = new MongoClient(url, { useNewUrlParser: true });
+	connection.connect((err) =>{
+
+		assert.equal(null, err);
+		const db = connection.db(dbName);
+		searchRestaurantByBorough(db, borough, (result) =>{
+
+			connection.close();
+			res.status(200).type('json').json(result).end();
+
+		})
+
+	});
+
+})
+app.get("/api/restaurant/cuisine/:cuisine", (req, res) =>{
+
+	const cuisine = req.params.cuisine;
+	const connection = new MongoClient(url, { useNewUrlParser: true });
+	connection.connect((err) =>{
+
+		assert.equal(null, err);
+		const db = connection.db(dbName);
+		searchRestaurantByCuisine(db, cuisine, (result) =>{
+
+			connection.close();
+			res.status(200).type('json').json(result).end();
+
+		})
+
+	});
+
 })
 
+
+//Handling Logout request
+app.get('/Logout', (req, res) =>{
+
+	req.session = null;
+	res.redirect('/');
+
+})
 
 
 
