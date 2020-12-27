@@ -11,8 +11,8 @@ const formidable = require('formidable');
 const { ObjectID } = require('mongodb');
 const { nextTick } = require('process');
 const { call } = require('body-parser');
-const url = 'mongodb+srv://ProjectAccess:yTUyYnl4jrE8RObp@cluster0.0czjw.mongodb.net/381_Project_Restaurant?retryWrites=true&w=majority';  // MongoDB Atlas Connection URL
-const dbName = '381_Project_Restaurant'; // Database Name
+const url = '';  // MongoDB Atlas Connection URL
+const dbName = ''; // Database Name
 const secKey = "I tried hard!";
 
 
