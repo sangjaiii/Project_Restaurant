@@ -379,52 +379,61 @@ app.get('/Rate', (req, res, next) => {
 	let isGraded = false;
 
 	//console.log(req.query.rating);
+	if(targetID){
 
-	if(!req.query.rating){
+		if(!req.query.rating){
 
-		console.log("Rating Page");
-		const connection = new MongoClient(url, { useNewUrlParser: true });
-		connection.connect((err) =>{
-
-			const db = connection.db(dbName);
-			getRestaurant(db, targetID, (result) =>{		
-
-				res.locals.RName = result[0].name;
-				res.locals.RID = result[0]._id;
-
-				checkIsGraded(db, targetID, req.session.userid, (result) =>{
-					
-					connection.close();
+			console.log("Rating Page");
+			const connection = new MongoClient(url, { useNewUrlParser: true });
+			connection.connect((err) =>{
+	
+				const db = connection.db(dbName);
+				getRestaurant(db, targetID, (result) =>{		
+	
+					res.locals.RName = result[0].name;
+					res.locals.RID = result[0]._id;
+	
+					checkIsGraded(db, targetID, req.session.userid, (result) =>{
+						
+						connection.close();
+						//console.log(result);
+						if(!result){
+							next();
+						}
+						
+					res.status(200).render("FailRate", {UserName:req.session.UserName});
+						
+						
+					})
+				})		
+			})
+		}
+		else{
+			
+			console.log("Rated Page");
+			
+			const connection = new MongoClient(url, { useNewUrlParser: true });
+			connection.connect((err) =>{
+	
+				const db = connection.db(dbName);
+				rateRestaurant(db, req.query.rating, req.query.RID, req.session.userid, (result) =>{
+	
+					connection.close()
 					//console.log(result);
-					if(!result){
-						next();
-					}
-					
-				res.status(200).render("FailRate", {UserName:req.session.UserName});
-					
+					res.status(200).render("Rated", {UserName:req.session.UserName});
 					
 				})
-			})		
-		})
-	}
-	else{
-		
-		console.log("Rated Page");
-		
-		const connection = new MongoClient(url, { useNewUrlParser: true });
-		connection.connect((err) =>{
-
-			const db = connection.db(dbName);
-			rateRestaurant(db, req.query.rating, req.query.RID, req.session.userid, (result) =>{
-
-				connection.close()
-				//console.log(result);
-				res.status(200).render("Rated", {UserName:req.session.UserName});
-				
 			})
-		})
-		
+			
+		}
+
+	}else{
+
+		res.redirect("/");
+
 	}
+
+	
 	
 })
 app.get('/Rate', (req, res) =>{
@@ -436,31 +445,42 @@ app.get('/Rate', (req, res) =>{
 app.get("/Delete", (req, res, next) =>{
 
 	const targetID = req.query.restaurant;
-	const connection = new MongoClient(url, { useNewUrlParser: true });
-	connection.connect((err) =>{
 
-		assert.equal(err,null);
-		const db = connection.db(dbName);
+	if(targetID){
 
-		getRestaurant(db, targetID, (result) =>{
+		const connection = new MongoClient(url, { useNewUrlParser: true });
+		connection.connect((err) =>{
+	
+			assert.equal(err,null);
+			const db = connection.db(dbName);
+	
+			getRestaurant(db, targetID, (result) =>{
+	
+				const owner = result[0].owner;
+				//console.log(owner);
+				if(req.session.userid == owner){
+					deleteRestaurant(db, targetID, (result) =>{
+	
+						connection.close();
+						//console.log(result);
+						next();
+			
+					});
+				}else{
+	
+					res.status(200).render('deleteFail', {UserName:req.session.UserName});
+	
+				}
+			})
+		});
 
-			const owner = result[0].owner;
-			//console.log(owner);
-			if(req.session.userid == owner){
-				deleteRestaurant(db, targetID, (result) =>{
+	}else{
 
-					connection.close();
-					//console.log(result);
-					next();
-		
-				});
-			}else{
+		res.redirect("/");
 
-				res.status(200).render('deleteFail', {UserName:req.session.UserName});
+	}
 
-			}
-		})
-	});
+	
 
 });
 app.get("/Delete", (req, res) =>{
@@ -472,27 +492,37 @@ app.get("/Delete", (req, res) =>{
 app.get("/Detail", (req, res, next) =>{
 
 	const targetID = req.query.restaurant;
-	const connection = new MongoClient(url, { useNewUrlParser: true });
-	connection.connect((err) =>{
 
-		assert.equal(null, err);
-		const db = connection.db(dbName);
+	if(targetID){
 
-
-		getRestaurant(db, targetID, (result) =>{
-
-			res.locals.RDetatil = result;
-
-			getUser(db, result[0].owner, (result) =>{
-
-				res.locals.ownerName = result[0].userName;
-				next();
-
+		const connection = new MongoClient(url, { useNewUrlParser: true });
+		connection.connect((err) =>{
+	
+			assert.equal(null, err);
+			const db = connection.db(dbName);
+	
+	
+			getRestaurant(db, targetID, (result) =>{
+	
+				res.locals.RDetatil = result;
+	
+				getUser(db, result[0].owner, (result) =>{
+	
+					res.locals.ownerName = result[0].userName;
+					next();
+	
+				});
+	
 			});
-
+	
 		});
 
-	});
+	}else{
+
+		res.redirect("/")
+
+	}
+	
 })
 app.get("/Detail", (req, res, next) =>{
 
@@ -557,21 +587,32 @@ app.get("/Map", (req, res) =>{
 app.get("/Edit", (req, res, next) =>{
 
 	const RID = req.query.restaurant;
-	const connection = new MongoClient(url, { useNewUrlParser: true });
-	connection.connect((err) =>{
 
-		assert.equal(null, err);
-		const db = connection.db(dbName);
+	if(RID){
 
-		getRestaurant(db, RID, (result) =>{
-
-			connection.close();
-			res.locals.restaurantJSON = result;
-			next();
-
+		const connection = new MongoClient(url, { useNewUrlParser: true });
+		connection.connect((err) =>{
+	
+			assert.equal(null, err);
+			const db = connection.db(dbName);
+	
+			getRestaurant(db, RID, (result) =>{
+	
+				connection.close();
+				res.locals.restaurantJSON = result;
+				next();
+	
+			});
+	
 		});
 
-	})
+	}else{
+
+		res.redirect("/");
+
+	}
+
+	
 
 });
 app.get("/Edit", (req, res) =>{
